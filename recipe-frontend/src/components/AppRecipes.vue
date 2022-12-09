@@ -13,7 +13,7 @@
           <!-- b-alert v-if="error" variant="danger" show>{{ error }}</b-alert-->
 
           <button type="button" class="btn btn-success btn-sm" v-b-modal.recipe-modal>
-            Create Account
+            Create Recipe
           </button>
           <br /><br />
           <table class="table table-hover">
@@ -53,13 +53,21 @@
       <b-modal ref="addRecipeModal" id="recipe-modal" title="Create a new recipe" hide-backdrop hide-footer>
         <b-form @submit="onSubmit" class="w-100">
           <b-form-group id="form-name-group" label="Recipe Name:" label-for="form-name-input">
-            <b-form-input id="form-name-input" type="text" v-model="createRecipeForm.name" placeholder="Account Name"
+            <b-form-input id="form-name-input" type="text" v-model="createRecipeForm.name" placeholder="Recipe Name"
               required>
             </b-form-input>
           </b-form-group>
-          <b-form-group id="form-currency-group" label="Currency:" label-for="form-currency-input">
-            <b-form-input id="form-currency-input" type="text" v-model="createRecipeForm.currency" placeholder="$ or €"
+          <b-form-group id="form-ingredients-group" label="Ingredients:" label-for="form-ingredients-input">
+            <b-form-input id="form-ingredients-input" type="text" v-model="createRecipeForm.ingredients" placeholder=" "
               required>
+            </b-form-input>
+          </b-form-group>
+          <b-form-group id="form-steps-group" label="Steps:" label-for="form-steps-input">
+            <b-form-input id="form-steps-input" type="text" v-model="createRecipeForm.steps" placeholder=" " required>
+            </b-form-input>
+          </b-form-group>
+          <b-form-group id="form-rate-group" label="Rate:" label-for="form-rate-input">
+            <b-form-input id="form-rate-input" type="text" v-model="createRecipeForm.rate" placeholder=" " required>
             </b-form-input>
           </b-form-group>
 
@@ -100,9 +108,6 @@ export default {
       editRecipeForm: {
         id: "",
         name: "",
-        ingredients: "",
-        steps: "",
-        rate: 0,
       },
       showMessage: false,
       message: "",
@@ -134,7 +139,7 @@ export default {
         .then((response) => {
           this.RESTgetRecipes();
           // For message alert
-          this.message = "Account Created succesfully!";
+          this.message = "Recipe Created succesfully!";
           // To actually show the message
           this.showMessage = true;
           // To hide the message after 3 seconds
@@ -171,8 +176,8 @@ export default {
     },
 
     // Delete account
-    RESTdeleteRecipe(RecipeId) {
-      const path = `${process.env.VUE_APP_ROOT_URL}/recipes/${accountId}`;
+    RESTdeleteRecipe(recipeId) {
+      const path = `${process.env.VUE_APP_ROOT_URL}/recipes/${recipeId}`;
       axios
         .delete(path)
         .then((response) => {
@@ -200,6 +205,8 @@ export default {
     initForm() {
       this.createRecipeForm.name = "";
       this.createRecipeForm.ingredients = "";
+      this.createRecipeForm.steps = "";
+      this.createRecipeForm.rate = 0;
       this.editRecipeForm.id = "";
       this.editRecipeForm.name = "";
     },
@@ -210,7 +217,9 @@ export default {
       this.$refs.addRecipeModal.hide(); //hide the modal when submitted
       const payload = {
         name: this.createRecipeForm.name,
-        currency: this.createRecipeForm.ingredients,
+        ingredients: this.createRecipeForm.ingredients,
+        steps: this.createRecipeForm.steps,
+        rate: this.createRecipeForm.rate,
       };
       this.RESTcreateRecipe(payload);
       this.initForm();
