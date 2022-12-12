@@ -23,6 +23,7 @@
                 <th scope="col">Recipe Ingredients</th>
                 <th scope="col">Recipe steps</th>
                 <th scope="col">Recipe rate</th>
+                <th scope="col">Favorite</th>
               </tr>
             </thead>
             <tbody>
@@ -31,6 +32,14 @@
                 <td>{{ recipe.ingredients }}</td>
                 <td>{{ recipe.steps }}</td>
                 <td>{{ recipe.rate }}</td>
+                <td> <span v-if="recipe.favorite == 'true'"><input type="checkbox" id="form-edit-favorite-group"
+                      v-model="recipe.favorite"></span>
+                  <span v-else>
+                    <input type="checkbox" id="form-edit-favorite-group">
+                  </span>
+                </td>
+                <!--<td><input type="checkbox" id="form-edit-favorite-group" value="true"></td>-->
+
                 <td>
                   <div class="btn-group" role="group">
                     <button type="button" class="btn btn-info btn-sm" v-b-modal.edit-recipe-modal
@@ -70,6 +79,12 @@
             <b-form-input id="form-rate-input" type="text" v-model="createRecipeForm.rate" placeholder=" " required>
             </b-form-input>
           </b-form-group>
+          <b-form-group id="form-favorite-group" label="Favorite:" label-for="form-favorite-input">
+            <!--<input type="checkbox" v-model="toggle" true-value="yes" false-value="no">-->
+            <input type="checkbox" id="form-favorite-group" v-model="createRecipeForm.favorite">
+            <span>Selected: {{ createRecipeForm.favorite }}</span>
+          </b-form-group>
+
 
           <b-button type="submit" variant="outline-info">Submit</b-button>
         </b-form>
@@ -79,10 +94,35 @@
       <b-modal ref="editRecipeModal" id="edit-recipe-modal" title="Edit the account" hide-backdrop hide-footer>
         <b-form @submit="onSubmitUpdate" class="w-100">
           <b-form-group id="form-edit-name-group" label="Recipe Name:" label-for="form-edit-name-input">
-            <b-form-input id="form-edit-name-input" type="text" v-model="editRecipeForm.name" placeholder="Recipe Name"
+            <b-form-input id="form-edit-name-input" type="text" v-model="editRecipeForm.name"
+              placeholder="Recipe Name"></b-form-input>
+          </b-form-group>
+          <b-form-group id="form-edit-ingredients-group" label="Ingredients:" label-for="form-edit-ingredients-input">
+            <b-form-input id="form-edit-ingredients-input" type="text" v-model="editRecipeForm.ingredients"
+              placeholder=" " required>
+            </b-form-input>
+          </b-form-group>
+          <b-form-group id="form-edit-steps-group" label="Steps:" label-for="form-edit-steps-input">
+            <b-form-input id="form-edit-steps-input" type="text" v-model="editRecipeForm.steps" placeholder=" "
               required>
             </b-form-input>
           </b-form-group>
+          <b-form-group id="form-edit-rate-group" label="Rate:" label-for="form-edit-rate-input">
+            <b-form-input id="form-edit-rate-input" type="text" v-model="editRecipeForm.rate" placeholder=" " required>
+            </b-form-input>
+          </b-form-group>
+          <b-form-group id="form-edit-rate-group" label="Rate:" label-for="form-edit-rate-input">
+            <span v-if="editRecipeForm.favorite == 'true'">
+              <input type="checkbox" id="form-edit-favorite-group" v-model="editRecipeForm.favorite">
+            </span>
+            <span v-else>
+              <input type="checkbox" id="form-edit-favorite-group">
+            </span>
+          </b-form-group>
+          <!--<b-form-group id="form-edit-favorite-group" label="Favorite:" label-for="form-edit-favorite-input">
+            <input type="checkbox" id="form-edit-favorite-group" v-model="editRecipeForm.favorite" value="false">
+            <span>Selected: {{ editRecipeForm.favorite }}</span>
+          </b-form-group>-->
           <b-button type="submit" variant="outline-info">Update</b-button>
         </b-form>
       </b-modal>
@@ -103,11 +143,15 @@ export default {
         ingredients: "",
         steps: "",
         rate: 0,
-
+        favorite: "",
       },
       editRecipeForm: {
         id: "",
         name: "",
+        ingredients: "",
+        steps: "",
+        rate: 0,
+        favorite: "",
       },
       showMessage: false,
       message: "",
@@ -207,30 +251,50 @@ export default {
       this.createRecipeForm.ingredients = "";
       this.createRecipeForm.steps = "";
       this.createRecipeForm.rate = 0;
+      this.createRecipeForm.favorite = "";
       this.editRecipeForm.id = "";
       this.editRecipeForm.name = "";
+      this.editRecipeForm.ingredients = "";
+      this.editRecipeForm.steps = "";
+      this.editRecipeForm.rate = 0;
+      this.editRecipeForm.favorite = "";
     },
-
     // Handle submit event for create account
     onSubmit(e) {
-      e.preventDefault(); //prevent default form submit form the browser
+      e.preventDefault();
+      //prevent default form submit form the browser
       this.$refs.addRecipeModal.hide(); //hide the modal when submitted
       const payload = {
         name: this.createRecipeForm.name,
         ingredients: this.createRecipeForm.ingredients,
         steps: this.createRecipeForm.steps,
         rate: this.createRecipeForm.rate,
+        favorite: this.createRecipeForm.favorite,
+
       };
       this.RESTcreateRecipe(payload);
       this.initForm();
     },
-
+    change() {
+      if (this.editRecipeForm.favorite == "true") {
+        return this.editRecipeForm.favorite = "false";
+      } else {
+        return this.editRecipeForm.favorite = "true";
+      };
+    },
     // Handle submit event for edit account
     onSubmitUpdate(e) {
       e.preventDefault(); //prevent default form submit form the browser
       this.$refs.editRecipeModal.hide(); //hide the modal when submitted
+      if (this.editRecipeForm.favorite == "false") {
+        this.editRecipeForm.favorite = "true";
+      }
       const payload = {
         name: this.editRecipeForm.name,
+        ingredients: this.editRecipeForm.ingredients,
+        steps: this.editRecipeForm.steps,
+        rate: this.editRecipeForm.rate,
+        favorite: this.editRecipeForm.favorite,
       };
       this.RESTupdateRecipe(payload, this.editRecipeForm.id);
       this.initForm();
