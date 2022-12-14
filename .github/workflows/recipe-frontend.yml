@@ -55,7 +55,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'ylaraqui-assignment-app-FE-dev-bicep'
-          slot-name: 'Development'
           package: .
 
   deploy-prod:
