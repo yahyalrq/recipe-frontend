@@ -63,7 +63,7 @@ jobs:
     needs: build
     environment:
       name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+      url: 'https://ylaraqui-assignment-app-FE-prod-bicep.azurewebsites.net'
 
     steps:
       - name: Download artifact from build job
